@@ -1,5 +1,3 @@
-import { pipe } from "https://esm.sh/fp-ts@2.13.1/function"
-
 type Player = "black" | "white"
 
 type Pos = [number, number]
@@ -16,11 +14,6 @@ type Board = {
     tiles: Tile[],
     board: Table<number, Tile | undefined>,
 }
-
-const count =
-    <A>(f: (a: A) => boolean) =>
-    (as: A[]) =>
-    as.reduce((count, a) => count + (f(a) ? 1 : 0), 0)
 
 const fromPos =
     (board: Board) =>
