@@ -21,15 +21,15 @@ const fromPos =
     board.board[y]?.[x]
 
 const isMovable =
+    (board: Board) =>
     ({pos: [x, y]}: Tile) =>
-    (board: Board): boolean =>
     !(fromPos(board)([x-1, y]) && fromPos(board)([x+1, y])) &&
     !(fromPos(board)([x, y-1]) && fromPos(board)([x, y+1]))
 
 const moveTile =
+    (board: Board) =>
     ([x, y]: Pos) =>
-    ({id, player}: Tile) =>
-    (board: Board): Board => {
+    ({id, player}: Tile) => {
         board.board[y][x] = board.tiles[id] = {id, player, pos: [x, y]}
         return board
     }
