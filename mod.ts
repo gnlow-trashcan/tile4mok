@@ -29,8 +29,10 @@ export const isMovable =
 export const moveTile =
     (board: Board) =>
     ([x, y]: Pos) =>
-    ({id, player}: Tile) => {
+    ({id, player, pos}: Tile) => {
+        const [prevX, prevY] = pos
         board.board[y][x] = board.tiles[id] = {id, player, pos: [x, y]}
+        board.board[prevY][prevX] = undefined
         return board
     }
 
