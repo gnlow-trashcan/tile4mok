@@ -81,10 +81,15 @@ export const boardToText =
     (board: Board): string => {
         const { xMin, yMin, xMax, yMax } = getSize(board)
         const rows = Array.from({ length: yMax - yMin + 1 }, (_, j) =>
-            Array.from({ length: xMax - xMin + 1 }, (_, i) => {
+            list(i => {
                 const tile = fromPos(board)([i + xMin, j + yMin])
                 return tile ? (tile.player === "black" ? "0" : "1") : " "
-            }).join("")
+            })(xMax - xMin + 1).join("")
         )
         return rows.join("\n")
     }
+
+export const list =
+    <A> (f: (i: number) => A) =>
+    (length: number) =>
+    Array.from({ length }, (_, i) => f(i))
