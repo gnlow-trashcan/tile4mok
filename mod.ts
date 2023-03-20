@@ -1,3 +1,5 @@
+import { pipe } from "https://esm.sh/fp-ts@2.13.1/function"
+
 type Player = "black" | "white"
 
 type Pos = [number, number]
@@ -90,12 +92,20 @@ export const boardMap =
         )(yMax - yMin + 1)
     }
 
+export const matrixToString =
+    <A>(ass: A[][]) =>
+        ass.map(x => x.join("")).join("\n")
+
 export const boardToText =
-    (board: Board) => boardMap(tile =>
-        tile
-            ? (tile.player === "black" ? "0" : "1")
-            : " "
-    )(board).map(x => x.join("")).join("\n")
+    (board: Board) => pipe(
+        board,
+        boardMap(tile =>
+            tile
+                ? (tile.player === "black" ? "0" : "1")
+                : " "
+        ),
+        matrixToString
+    )
 
 export const list =
     <A> (f: (i: number) => A) =>
