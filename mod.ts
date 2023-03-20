@@ -14,7 +14,7 @@ type Table<K extends number, T> = Record<K, Record<K, T>>
 
 type Board = {
     tiles: Tile[],
-    board: Table<number, Tile | undefined>,
+    board: Table<number, Tile | null>,
 }
 
 export const fromPos =
@@ -34,7 +34,7 @@ export const moveTile =
     ({id, player, pos}: Tile) => {
         const [prevX, prevY] = pos
         board.board[y][x] = board.tiles[id] = {id, player, pos: [x, y]}
-        board.board[prevY][prevX] = undefined
+        board.board[prevY][prevX] = null
         return board
     }
 
@@ -42,9 +42,10 @@ export const textToBoard =
     (text: string): Board => {
         const tiles: Tile[] = []
         const board = text.split("\n").map((line, j) => {
-            return (line.split("") as TextRepChar[]).map((char, i): Tile | undefined => {
+            return (line.split("") as TextRepChar[]).map((char, i) => {
                 const id = i + j * line.length
-                if (char != " ") return tiles[id] = {
+                if (char == " ") return null
+                else return tiles[id] = {
                     id,
                     player: char == "0" ? "black" : "white" as Player,
                     pos: [i, j] as Pos,
@@ -82,7 +83,7 @@ export const getSize =
         )
 
 export const boardMap =
-    <A>(f: (tile: Tile | undefined) => A) =>
+    <A>(f: (tile: Tile | null) => A) =>
     (board: Board) => {
         const { xMin, yMin, xMax, yMax } = getSize(board)
         return list(j =>
@@ -91,6 +92,33 @@ export const boardMap =
             )(xMax - xMin + 1)
         )(yMax - yMin + 1)
     }
+
+export const boardFilter =
+    (f: (tile: Tile | null) => boolean) =>
+    boardMap(tile => f(tile) ? tile : undefined)
+
+export const fold =
+    <A, B>(onNull: () => B, onSome: (a: A) => B) =>
+    (ma: A | null) =>
+    ma ? onSome(ma) : onNull()
+
+export const movableTiles =
+    (board: Board) => pipe(
+        board,
+        boardMap(
+            fold(
+                () => " ",
+                tile => isMovable(board)(tile)
+                    ? tile.player == "black"
+                        ? "🔳"
+                        : "🔲"
+                    : tile.player == "black"
+                        ? "⬛"
+                        : "⬜",
+            )
+        ),
+        matrixToString
+    )
 
 export const matrixToString =
     <A>(ass: A[][]) =>

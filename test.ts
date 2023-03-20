@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.147.0/testing/asserts.ts"
-import { getSize, textToBoard, boardToText, moveTile, fromPos } from "./mod.ts"
+import { getSize, textToBoard, boardToText, moveTile, fromPos, movableTiles } from "./mod.ts"
 
 Deno.test("getSize should return the correct size for a board", () => {
     const board = textToBoard(
@@ -32,5 +32,21 @@ Deno.test("moveTile", () => {
     assertEquals(
         boardToText(result),
         "010\n1  "
+    )
+})
+
+Deno.test("movableTiles", () => {
+    const board = textToBoard(
+        "0101\n" +
+        "0101\n" +
+        "1010\n" +
+        "1010\n"
+    )
+    assertEquals(
+        movableTiles(board),
+        "🔳⬜⬛🔲\n" +
+        "⬛⬜⬛⬜\n" +
+        "⬜⬛⬜⬛\n" +
+        "🔲⬛⬜🔳"
     )
 })
