@@ -79,17 +79,23 @@ export const getSize =
             }
         )
 
-export const boardToText =
-    (board: Board): string => {
+export const boardMap =
+    <A>(f: (tile: Tile | undefined) => A) =>
+    (board: Board) => {
         const { xMin, yMin, xMax, yMax } = getSize(board)
-        const rows = Array.from({ length: yMax - yMin + 1 }, (_, j) =>
-            list(i => {
-                const tile = fromPos(board)([i + xMin, j + yMin])
-                return tile ? (tile.player === "black" ? "0" : "1") : " "
-            })(xMax - xMin + 1).join("")
-        )
-        return rows.join("\n")
+        return list(j =>
+            list(i =>
+                f(fromPos(board)([i + xMin, j + yMin]))
+            )(xMax - xMin + 1)
+        )(yMax - yMin + 1)
     }
+
+export const boardToText =
+    (board: Board) => boardMap(tile =>
+        tile
+            ? (tile.player === "black" ? "0" : "1")
+            : " "
+    )(board).map(x => x.join("")).join("\n")
 
 export const list =
     <A> (f: (i: number) => A) =>
